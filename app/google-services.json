@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "873118232071",
+    "firebase_url": "https://onesignalpushnotificatio-59554-default-rtdb.firebaseio.com",
+    "project_id": "onesignalpushnotificatio-59554",
+    "storage_bucket": "onesignalpushnotificatio-59554.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873118232071:android:0e7e3af10a64aefe4904a2",
+        "android_client_info": {
+          "package_name": "com.hypertrack.ridesharing.driver.android.github"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb3O2pIXSNPzI6gEfAWxC8dT228jrLguk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873118232071:android:3e896e0ddd98fb6e4904a2",
+        "android_client_info": {
+          "package_name": "com.image.videocallapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb3O2pIXSNPzI6gEfAWxC8dT228jrLguk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873118232071:android:43ac9c13f13886ab4904a2",
+        "android_client_info": {
+          "package_name": "com.jisha.onesignalpushnotification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873118232071-4v7u7tkvihuh16fkdokjbn94ojol17f7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jisha.onesignalpushnotification",
+            "certificate_hash": "e20fff28bbc805ac8d5dacb387cda88c989ca70b"
+          }
+        },
+        {
+          "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb3O2pIXSNPzI6gEfAWxC8dT228jrLguk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873118232071-fsgseiad04837r1vr4j8f07nbhs7ggsl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
