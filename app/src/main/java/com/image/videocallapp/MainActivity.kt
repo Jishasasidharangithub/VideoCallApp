@@ -1,5 +1,6 @@
 package com.image.videocallapp
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +19,7 @@ import io.agora.rtc2.IRtcEngineEventHandler
 import io.agora.rtc2.RtcEngine
 import io.agora.rtc2.RtcEngineConfig
 import io.agora.rtc2.video.VideoCanvas
+import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,43 +49,18 @@ class MainActivity : AppCompatActivity() {
     private var agoraEngine: RtcEngine? = null
     private var localSurfaceView: SurfaceView? = null
     private var remoteSurfaceView: SurfaceView? = null
-    private lateinit var customNotificationManager: CustomNotificationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-        customNotificationManager = CustomNotificationManager(this)
 
-        // Initialize OneSignal and create notification channel
-        OneSignal.initWithContext(this)
-        OneSignal.setAppId("ffba91b9-9130-415b-a6c1-281ce88c5d73")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "7a9a556f-ed68-4b91-8e95-77be6963bda0"
-            val channelName = "IncomingCall....."
-            val importance = android.app.NotificationManager.IMPORTANCE_HIGH
-            val channel = android.app.NotificationChannel(channelId, channelName, importance)
-            val notificationManager =
-                getSystemService(android.app.NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        OneSignal.setNotificationOpenedHandler {
-            // Handle OneSignal notification opened event here
-            customNotificationManager.showIncomingCallNotification()
-
-            // Add logic to open your video call activity or join the call
-            // For example, you can call the joinChannel method
-            joinChannel()
-        }
         if (!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID)
         }
         setupVideoSDKEngine()
 
     }
-
     private fun setupVideoSDKEngine() {
         try {
             val config = RtcEngineConfig()
@@ -97,7 +74,6 @@ class MainActivity : AppCompatActivity() {
             showMessage(e.toString())
         }
     }
-
     val mRtcEventHandler = object : IRtcEngineEventHandler() {
         override fun onUserJoined(uid: Int, elapsed: Int) {
             showMessage("Remote user joined $uid")
@@ -116,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread { remoteSurfaceView?.visibility = View.GONE }
         }
     }
-
     private fun setupRemoteVideo(uid: Int) {
         val container: FrameLayout? = binding?.remoteVideoViewContainer
         remoteSurfaceView = SurfaceView(baseContext)
@@ -135,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         agoraEngine?.setupLocalVideo(VideoCanvas(localSurfaceView, VideoCanvas.RENDER_MODE_HIDDEN, 0))
     }
 
-    fun joinChannel() {
+    fun joinChannel(view: View) {
         if (checkSelfPermission()) {
             val options = ChannelMediaOptions()
             // For a Video call, set the channel profile as COMMUNICATION.
