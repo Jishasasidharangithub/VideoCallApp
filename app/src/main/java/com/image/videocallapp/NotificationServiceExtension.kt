@@ -56,7 +56,7 @@ class NotificationServiceExtension : OneSignal.OSRemoteNotificationReceivedHandl
                 customNotificationLayout.setTextViewText(R.id.tvDesc,"Anu")
 
                 val acceptIntent = Intent(this, MainActivity::class.java).apply {
-                    action = "from-notification"
+                    action = "AcceptButton"
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
 

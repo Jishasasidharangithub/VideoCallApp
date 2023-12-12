@@ -1,5 +1,7 @@
 package com.image.videocallapp
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -60,6 +62,24 @@ class MainActivity : AppCompatActivity() {
         }
         setupVideoSDKEngine()
 
+        if (intent.action == "AcceptButton") {
+            joinChannel()
+            // Remove the notification
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(8547)
+
+            // Stop the vibration
+            stopVibration()
+        }
+
+    }
+    private fun stopVibration() {
+        // Check if the vibrator is initialized
+        if (NotificationServiceExtension.vibrator != null) {
+            // Stop the vibration
+            NotificationServiceExtension.vibrator?.cancel()
+        }
     }
     private fun setupVideoSDKEngine() {
         try {
@@ -110,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         agoraEngine?.setupLocalVideo(VideoCanvas(localSurfaceView, VideoCanvas.RENDER_MODE_HIDDEN, 0))
     }
 
-    fun joinChannel(view: View) {
+    fun joinChannel() {
         if (checkSelfPermission()) {
             val options = ChannelMediaOptions()
             // For a Video call, set the channel profile as COMMUNICATION.
@@ -130,17 +150,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun leaveChannel(view: View) {
-        if (!isJoined) {
-            showMessage("Join a channel first")
-        } else {
-            agoraEngine?.leaveChannel()
-            showMessage("You left the channel")
-            // Stop remote video rendering.
-            remoteSurfaceView?.visibility = View.GONE
-            // Stop local video rendering.
-            localSurfaceView?.visibility = View.GONE
-            isJoined = false
-        }
+        finish()
     }
 
     fun showMessage(message: String) {

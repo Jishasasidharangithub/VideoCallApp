@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
-            android:id="@+id/local_video_view_container"
+            android:id="@+id/remote_video_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/darker_gray"
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
-            android:id="@+id/remote_video_view_container"
+            android:id="@+id/local_video_view_container"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="@dimen/_120sdp"
             android:layout_margin="6dp"
