@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.SurfaceView
@@ -25,59 +26,91 @@ import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
-
     private var binding:ActivityMainBinding ?= null
-
     private val PERMISSION_REQ_ID = 22
     private val REQUESTED_PERMISSIONS = arrayOf<String>(
         android.Manifest.permission.RECORD_AUDIO,
         android.Manifest.permission.CAMERA
     )
-
     private fun checkSelfPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[0]) != PackageManager.PERMISSION_GRANTED ||
             ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED)
-        {
-            return false
+        { return false
         }
         return true
     }
-
     private var appId = "07ea2876544942f6bf279730fd008e10"
-    private var channelName = "demovideocall"
-    private var token = "007eJxTYDg1v5GV4+GRrgf7b0nsr1q9eo3bpeMxc7hXPS4+F26f4HRAgcHAPDXRyMLczNTExNLEKM0sKc3I3NLc2CAtxcDAItXQYN/dotSGQEaGOoPVTIwMEAji8zKkpObml2WmpOYnJ+bkMDAAACSdJL0="
+    private var channelName = "DemoVideoCall"
+    private var token = "007eJxTYFjN+f/K6pdBFdEX9863TVrTE+A9OWxqRE8IV5+H0J5NLb4KDAbmqYlGFuZmpiYmliZGaWZJaUbmlubGBmkpBgYWqYYGegerUhsCGRnmTvzDyMgAgSA+L4NLam5+WGZKar5zYk4OAwMAh+4itQ=="
     private var uid = 0
     private var isJoined:Boolean = false
     private var agoraEngine: RtcEngine? = null
-    private var localSurfaceView: SurfaceView? = null
+    private var localSurfaceView: View? = null
     private var remoteSurfaceView: SurfaceView? = null
-
+    private var isMuted: Boolean = false
+    private var isVideoEnabled: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-
         if (!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID)
         }
         setupVideoSDKEngine()
-
+        setVoiceHandleEvent()
+        setVideoHandleEvents()
         if (intent.action == "AcceptButton") {
             joinChannel()
-            // Remove the notification
+            NotificationServiceExtension.stopRingtone()
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(8547)
-
-            // Stop the vibration
             stopVibration()
         }
-
+    }
+    private fun setVoiceHandleEvent(){
+        binding?.ivVioceOn?.visibility = if (isMuted) View.GONE else View.VISIBLE
+        binding?.ivVioceOff?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        binding?.ivVioceOn?.setOnClickListener {
+            toggleMicrophone(true)
+        }
+        binding?.ivVioceOff?.setOnClickListener {
+            toggleMicrophone(false)
+        }
+    }
+    private fun toggleMicrophone(isMute: Boolean) {
+        this.isMuted = isMute
+        binding?.ivVioceOn?.visibility = if (isMute) View.GONE else View.VISIBLE
+        binding?.ivVioceOff?.visibility = if (isMute) View.VISIBLE else View.GONE
+        // Mute or unmute the microphone based on the status
+        agoraEngine?.muteLocalAudioStream(isMute)
+    }
+    private fun setVideoHandleEvents(){
+        binding?.ivVideoOn?.visibility = if (isVideoEnabled) View.GONE else View.VISIBLE
+        binding?.ivVideoOff?.visibility = if (isVideoEnabled) View.VISIBLE else View.GONE
+        binding?.ivVideoOn?.setOnClickListener {
+            toggleCamera(true)
+        }
+        binding?.ivVideoOff?.setOnClickListener {
+            toggleCamera(false)
+        }
+    }
+    private fun toggleCamera(isEnable: Boolean) {
+        this.isVideoEnabled = isEnable
+        binding?.ivVideoOn?.visibility = if (isEnable) View.GONE else View.VISIBLE
+        binding?.ivVideoOff?.visibility = if (isEnable) View.VISIBLE else View.GONE
+        // Show or hide the local video view based on the status
+        localSurfaceView?.visibility = if (isEnable) View.VISIBLE else View.GONE
+        agoraEngine?.muteLocalVideoStream(!isEnable)
+        // Stop or start the local video preview based on the status
+        if (isEnable) {
+            agoraEngine?.startPreview()
+        } else {
+            agoraEngine?.stopPreview()
+        }
     }
     private fun stopVibration() {
-        // Check if the vibrator is initialized
         if (NotificationServiceExtension.vibrator != null) {
-            // Stop the vibration
             NotificationServiceExtension.vibrator?.cancel()
         }
     }
@@ -88,7 +121,6 @@ class MainActivity : AppCompatActivity() {
             config.mAppId = appId
             config.mEventHandler = mRtcEventHandler
             agoraEngine = RtcEngine.create(config)
-            // By default, the video module is disabled, call enableVideo to enable it.
             agoraEngine?.enableVideo()
         } catch (e: Exception) {
             showMessage(e.toString())
@@ -97,54 +129,41 @@ class MainActivity : AppCompatActivity() {
     val mRtcEventHandler = object : IRtcEngineEventHandler() {
         override fun onUserJoined(uid: Int, elapsed: Int) {
             showMessage("Remote user joined $uid")
-
-            // Set the remote video view
             runOnUiThread { setupRemoteVideo(uid) }
-        }
-
+         }
         override fun onJoinChannelSuccess(channel: String?, uid: Int, elapsed: Int) {
             isJoined = true
             showMessage("Joined Channel $channel")
         }
-
         override fun onUserOffline(uid: Int, reason: Int) {
             showMessage("Remote user offline $uid $reason")
             runOnUiThread { remoteSurfaceView?.visibility = View.GONE }
         }
     }
     private fun setupRemoteVideo(uid: Int) {
-        val container: FrameLayout? = binding?.remoteVideoViewContainer
         remoteSurfaceView = SurfaceView(baseContext)
-        remoteSurfaceView?.setZOrderMediaOverlay(true)
-        container?.addView(remoteSurfaceView)
-        agoraEngine?.setupRemoteVideo(VideoCanvas(remoteSurfaceView, VideoCanvas.RENDER_MODE_FIT, uid))
-        // Display RemoteSurfaceView.
+        //remoteSurfaceView?.setZOrderMediaOverlay(true)
+        binding?.remoteVideoViewContainer?.addView(remoteSurfaceView)
+        agoraEngine?.setupRemoteVideo(VideoCanvas(remoteSurfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, uid))
         remoteSurfaceView?.visibility = View.VISIBLE
     }
     private fun setupLocalVideo() {
-        val container: FrameLayout? = binding?.localVideoViewContainer
-        // Create a SurfaceView object and add it as a child to the FrameLayout.
         localSurfaceView = SurfaceView(baseContext)
-        container?.addView(localSurfaceView)
-        // Call setupLocalVideo with a VideoCanvas having uid set to 0.
-        agoraEngine?.setupLocalVideo(VideoCanvas(localSurfaceView, VideoCanvas.RENDER_MODE_HIDDEN, 0))
+        (localSurfaceView as SurfaceView)?.setZOrderMediaOverlay(true)
+        binding?.localVideoViewContainer?.addView(localSurfaceView)
+        agoraEngine?.setupLocalVideo(VideoCanvas(localSurfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, 0))
     }
-
     fun joinChannel() {
         if (checkSelfPermission()) {
             val options = ChannelMediaOptions()
-            // For a Video call, set the channel profile as COMMUNICATION.
             options.channelProfile = Constants.CHANNEL_PROFILE_COMMUNICATION
-            // Set the client role as BROADCASTER or AUDIENCE according to the scenario.
             options.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER
-            // Display LocalSurfaceView.
             setupLocalVideo()
-            localSurfaceView?.visibility = View.VISIBLE
-            // Start local preview.
+            /*localSurfaceView?.visibility = View.VISIBLE
+            localSurfaceView?.bringToFront()*/
             agoraEngine?.startPreview()
-            // Join the channel with a temp token.
-            // You need to specify the user ID yourself, and ensure that it is unique in the channel.
             agoraEngine?.joinChannel(token, channelName, uid, options)
+
         } else {
             Toast.makeText(applicationContext, "Permissions were not granted", Toast.LENGTH_SHORT).show()
         }
@@ -152,23 +171,18 @@ class MainActivity : AppCompatActivity() {
     fun leaveChannel(view: View) {
         finish()
     }
-
     fun showMessage(message: String) {
         runOnUiThread {
             Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
         }
     }
-
     override fun onDestroy() {
         super.onDestroy()
         agoraEngine?.stopPreview()
         agoraEngine?.leaveChannel()
-
-        // Destroy the engine in a sub-thread to avoid congestion
         Thread {
             RtcEngine.destroy()
             agoraEngine = null
         }.start()
     }
-
 }

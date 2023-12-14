@@ -32,6 +32,17 @@ class NotificationServiceExtension : OneSignal.OSRemoteNotificationReceivedHandl
         var vibrator: Vibrator? = null
         var ringtonePlayer: MediaPlayer? = null
         var startedRinging = false
+        fun stopRingtone() {
+            try {
+                if (ringtonePlayer != null && ringtonePlayer?.isPlaying == true) {
+                    ringtonePlayer?.stop()
+                    ringtonePlayer?.release()
+                    ringtonePlayer = null
+                }
+            } catch (e: Exception) {
+                // Handle exceptions if needed
+            }
+        }
     }
 
     override fun remoteNotificationReceived(context: Context?, notificationReceivedEvent: OSNotificationReceivedEvent?) {
@@ -57,6 +68,8 @@ class NotificationServiceExtension : OneSignal.OSRemoteNotificationReceivedHandl
 
                 val acceptIntent = Intent(this, MainActivity::class.java).apply {
                     action = "AcceptButton"
+                    /*putExtra("channelName", channelName)
+                    putExtra("token", token)*/
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
 

@@ -7,29 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent">
-
         <FrameLayout
             android:id="@+id/remote_video_view_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:background="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
         <FrameLayout
             android:id="@+id/local_video_view_container"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="@dimen/_120sdp"
             android:layout_margin="6dp"
-            android:background="@android:color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:elevation="@dimen/_10sdp"
+             android:background="@android:color/black"
+            app:layout_constraintEnd_toEndOf="@+id/remote_video_view_container"
+            app:layout_constraintTop_toTopOf="@+id/remote_video_view_container" />
 
         <ImageView
             android:id="@+id/LeaveButton"
@@ -43,15 +41,46 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!--<ImageView
-            android:id="@+id/JoinButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/ic_accept_call"
-            android:onClick="joinChannel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/remote_video_view_container"
-            app:layout_constraintTop_toBottomOf="@+id/remote_video_view_container" />-->
+    <ImageView
+        android:id="@+id/ivVioceOn"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:src="@drawable/voice_on"
+        app:layout_constraintEnd_toStartOf="@+id/LeaveButton"
+        app:layout_constraintTop_toTopOf="@+id/LeaveButton"
+        app:layout_constraintBottom_toBottomOf="@+id/LeaveButton"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivVioceOff"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:src="@drawable/voice_off"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/LeaveButton"
+        app:layout_constraintTop_toTopOf="@+id/LeaveButton"
+        app:layout_constraintBottom_toBottomOf="@+id/LeaveButton"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivVideoOn"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/video_off"
+        app:layout_constraintTop_toTopOf="@+id/LeaveButton"
+        app:layout_constraintBottom_toBottomOf="@+id/LeaveButton"
+        app:layout_constraintStart_toEndOf="@+id/LeaveButton"/>
+
+    <ImageView
+        android:id="@+id/ivVideoOff"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/video_on"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/LeaveButton"
+        app:layout_constraintBottom_toBottomOf="@+id/LeaveButton"
+        app:layout_constraintStart_toEndOf="@+id/LeaveButton"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
